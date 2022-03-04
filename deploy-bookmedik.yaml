@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookmedik
+  labels:
+    app: bookmedik
+    type: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bookmedik
+      type: frontend
+  template:
+    metadata:
+      labels:
+        app: bookmedik
+        type: frontend
+    spec:
+      containers:
+        - name: bookmedik
+          image: megandil/bookmedik:v1_3
+          ports:
+            - containerPort: 80
+              name: http-port
+          env:
+              - name: BK_HOST
+                value: mariadb-service
+              - name: BK_USER
+                valueFrom:
+                  configMapKeyRef:
+                    name: bd-datos
+                    key: bd_user
+              - name: BK_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: bd-passwords
+                    key: bd_password
+              - name: BK_BD
+                valueFrom:
+                  configMapKeyRef:
+                    name: bd-datos
+                    key: bd_dbname
